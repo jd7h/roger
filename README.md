@@ -29,8 +29,7 @@ Connecting...
 Initial statuscode 404
 Entering test loop with timeout of 5 minutes
 Testing...
-<class 'urllib.error.HTTPError'> HTTP Error 404: Not Found
-New statuscode detected 200 -> 404
+New statuscode detected 404 -> 200
 Composing alert email.
 Finished
 ```
