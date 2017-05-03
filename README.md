@@ -19,8 +19,8 @@ The tool takes the following input:
 $ python
 >>> import roger
 >>> testurl = "http://github.com/jd7h/roger/master/README.md"
->>> sender = "someemail@mymailserver.com"
->>> reciever = "someotheremail@mymailserver.com"
+>>> sender = "sender@mymailserver.com"
+>>> receiver = "receiver@mymailserver.com"
 >>> timeout = 5
 >>> roger.main(testurl,sender,receiver,timeout)
 Roger/0.1 (HTTP status code monitoring)
@@ -32,4 +32,13 @@ Testing...
 New statuscode detected 404 -> 200
 Composing alert email.
 Finished
+```
+You will receive a notification email at receiver@mymailserver.com of the form:
+
+```
+Subject: [Roger] Status change for http://github.com/jd7h/roger/master/README.md
+From: sender@mymailserver.com
+To: receiver@mymailserver.com
+
+Status of http://github.com/jd7h/roger/master/README.md changed from 404 to 200
 ```
