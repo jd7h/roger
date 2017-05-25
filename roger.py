@@ -8,7 +8,7 @@ import smtplib
 import time
 from email.mime.text import MIMEText
 
-def main(testurl,sender,receiver,timeout):
+def roger(testurl,sender,receiver,timeout):
     softwarename = "Roger"
     softwareversion = "0.1"
     softwaredescription = "HTTP status code monitoring"
@@ -29,7 +29,8 @@ def main(testurl,sender,receiver,timeout):
         print(type(error),error)
         initstatus = error.code
         print("Initial statuscode",initstatus)
-    while not status_changed:
+    
+    while True:
         print("Entering test loop with timeout of",timeout,"minutes")
         time.sleep(timeout * 60)
         print("Testing...")
@@ -47,15 +48,45 @@ def main(testurl,sender,receiver,timeout):
                 newstatus = error.getcode()
                 print("New statuscode detected",initstatus,"->",newstatus)
                 status_changed = True
+        if status_changed:
+            mail_alert()
+            initstatus = newstatus
+            status_changed = False
 
-    # time for an alert
+def send_with_local_mailserver(msg):
+    try:
+        server = smtplib.SMTP('localhost')
+        server.send_message(msg)
+        server.quit()
+        print("Alert sent")
+        return True
+    except Error as e:
+        print(type(error),error)
+        return False        
+
+def send_with_gmail_mailserver(msg):
+    accountname = ""
+    password = ""
+    try:
+        server = smtplib.SMTP("smtp.gmail.com",587)
+        server.ehlo()
+        server.starttls()
+        server.login(accountname,password)
+        server.sendmail(accountname,accountname,msg.as_string())
+        server.quit()
+        print("Alert sent")
+        return True
+    except Error as e:
+        print(type(error),error)
+        return False
+
+
+def mail_alert(testurl,sender,receiver,initstatus,newstatus):
     print("Composing alert email.")
     message = "Status of " + testurl + " changed from " + str(initstatus) + " to " + str(newstatus)
     msg = MIMEText(message)
     msg["Subject"] = "[" + softwarename + "]" + " Status change for " + testurl 
     msg["From"] = sender
     msg["To"] = receiver
-    s = smtplib.SMTP('localhost')
-    s.send_message(msg)
-    s.quit()
-    print("Finished")
+    return send_with_local_mailserver(msg) # alternative: send_with_gmail(msg)
+
