@@ -7,30 +7,17 @@ import urllib.error
 import smtplib
 import time
 from email.mime.text import MIMEText
+    
+softwarename = "Roger"
+softwareversion = "0.1"
+softwaredescription = "HTTP status code monitoring"
+useragentstring = softwarename + "/" + softwareversion + " (" + softwaredescription + ")"
 
-def roger(testurl,sender,receiver,timeout):
-    softwarename = "Roger"
-    softwareversion = "0.1"
-    softwaredescription = "HTTP status code monitoring"
-    useragentstring = softwarename + "/" + softwareversion + " (" + softwaredescription + ")"
-
-    initstatus = 0
+def monitor_status_code(testurl,initstatus,timeout):
     newstatus = 0
     status_changed = False
-    print(useragentstring)
-    print("Status monitoring for",testurl)
-    try:
-        print("Connecting...")
-        connection = urllib.request.urlopen(urllib.request.Request(testurl, headers= {'User-Agent': useragentstring}), timeout=60)
-        initstatus = connection.getcode()
-        print("Initial statuscode",initstatus)
-        connection.close()
-    except urllib.error.HTTPError as error:
-        print(type(error),error)
-        initstatus = error.code
-        print("Initial statuscode",initstatus)
     
-    while True:
+    while not status_changed:
         print("Entering test loop with timeout of",timeout,"minutes")
         time.sleep(timeout * 60)
         print("Testing...")
@@ -48,10 +35,29 @@ def roger(testurl,sender,receiver,timeout):
                 newstatus = error.getcode()
                 print("New statuscode detected",initstatus,"->",newstatus)
                 status_changed = True
-        if status_changed:
-            mail_alert()
-            initstatus = newstatus
-            status_changed = False
+    return newstatus
+
+def roger(testurl,sender,receiver,timeout):
+    initstatus = 0
+    print(useragentstring)
+    print("Status monitoring for",testurl)
+    
+    # first time connecting to target to get initstatus
+    try:
+        print("Connecting...")
+        connection = urllib.request.urlopen(urllib.request.Request(testurl, headers= {'User-Agent': useragentstring}), timeout=60)
+        initstatus = connection.getcode()
+        print("Initial statuscode",initstatus)
+        connection.close()
+    except urllib.error.HTTPError as error:
+        print(type(error),error)
+        initstatus = error.code
+        print("Initial statuscode",initstatus)
+    
+    while True:
+        newstatus = monitor_status_code(testurl,initstatus,timeout) 
+        mail_alert(testurl,sender,receiver,initstatus,newstatus)
+        initstatus = newstatus
 
 def send_with_local_mailserver(msg):
     try:
