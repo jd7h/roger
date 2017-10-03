@@ -9,7 +9,7 @@ import time
 from email.mime.text import MIMEText
 
 SOFTWARENAME = "Roger"
-SOFTWAREVERSION = "0.1"
+SOFTWAREVERSION = "0.2"
 SOFTWAREDESCRIPTION = "HTTP status code monitoring"
 USERAGENTSTRING = SOFTWARENAME + "/" + SOFTWAREVERSION + " (" + SOFTWAREDESCRIPTION + ")"
 
@@ -80,23 +80,6 @@ def send_with_local_mailserver(msg):
     try:
         server = smtplib.SMTP('localhost')
         server.send_message(msg)
-        server.quit()
-        print("Alert sent")
-        return True
-    except Exception as exception:
-        print(type(exception), exception)
-        return False
-
-def send_with_gmail_mailserver(msg):
-    """Send msg with gmail mail server"""
-    accountname = ""
-    password = ""
-    try:
-        server = smtplib.SMTP("smtp.gmail.com", 587)
-        server.ehlo()
-        server.starttls()
-        server.login(accountname, password)
-        server.sendmail(accountname, accountname, msg.as_string())
         server.quit()
         print("Alert sent")
         return True
