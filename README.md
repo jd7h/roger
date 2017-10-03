@@ -1,12 +1,6 @@
 # roger
 HTTP Status Code monitoring with notifications via email
 
-## Ideas for improving this tool
-
-* Option for continuous monitoring
-* Better and robuster error handling
-* Check for the (existence) of a mail server
-
 ## Usage and output
 The tool takes the following input:
 
@@ -42,3 +36,7 @@ To: receiver@mymailserver.com
 
 Status of http://github.com/jd7h/roger/master/README.md changed from 404 to 200
 ```
+
+## Ideas for improving this tool
+
+* Check for the existence of a mail server
